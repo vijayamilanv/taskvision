@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskVision | Complete Workflow System</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            /* 60-30-10 Color System */
+            --color-dominant: #f3f6f6;
+            --color-secondary: #36747d;
+            --color-accent: #33ccab;
+            
+            /* Text Colors */
+            --text-on-dominant: #36747d;
+            --text-on-secondary: #ffffff;
+            --text-on-accent: #000000;
+            --link-color: #33ccab;
+        }
+
+        body {
+            background-color: var(--color-dominant);
+            color: var(--text-on-dominant);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--color-secondary), #285c65) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--color-dominant) 0%, #e3f2fd 100%);
+            min-height: 85vh;
+            padding-top: 80px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .icon-po { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .icon-pm { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .icon-tm { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+        .btn-primary {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+            color: var(--text-on-accent);
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #28b79d;
+            border-color: #28b79d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 204, 171, 0.3);
+        }
+
+        .workflow-step {
+            position: relative;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .step-1 { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+        .step-2 { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+        .step-3 { background: linear-gradient(135deg, #fff3e0, #ffecb3); }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 2px solid rgba(51, 204, 171, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-secondary);
+            margin-bottom: 10px;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--color-secondary), #285c65);
+            color: white;
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="index.html">
+                <i class="bi bi-kanban-fill me-2"></i>TaskVision
+            </a>
+            <div>
+                <a href="login.html" class="btn btn-outline-light me-2">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+                <a href="register.html" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Register
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-50">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Streamline Your <span class="text-accent" style="color: var(--color-accent);">Workflow</span> Management
+                    </h1>
+                    <p class="lead mb-4">
+                        Connect Product Owners, Project Managers, and Team Members in a seamless workflow system. 
+                        From project creation to task completion, we've got you covered.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#features" class="btn btn-primary">
+                            <i class="bi bi-play-circle me-2"></i>Get Started
+                        </a>
+                        <a href="#workflow" class="btn btn-outline-secondary">
+                            <i class="bi bi-info-circle me-2"></i>Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                         class="img-fluid rounded shadow-lg" alt="Workflow Management">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-box">
+                        <div class="stat-number">100+</div>
+                        <p class="mb-0">Projects Managed</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-box">
+                        <div class="stat-number">500+</div>
+                        <p class="mb-0">Tasks Completed</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-box">
+                        <div class="stat-number">50+</div>
+                        <p class="mb-0">Teams Organized</p>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stat-box">
+                        <div class="stat-number">99%</div>
+                        <p class="mb-0">Satisfaction Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold mb-3">Role-Based Workflow Management</h2>
+                <p class="text-muted">Each role has specific responsibilities and permissions</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-po">
+                            <i class="bi bi-person-badge text-white fs-3"></i>
+                        </div>
+                        <h4 class="text-center mb-3">Product Owner</h4>
+                        <p class="text-center text-muted">
+                            Strategic role that defines projects, sets priorities, and approves plans.
+                            Creates projects and assigns them to Project Managers.
+                        </p>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Create Projects</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Set Priorities</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Approve Plans</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Monitor Progress</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-pm">
+                            <i class="bi bi-clipboard-data text-white fs-3"></i>
+                        </div>
+                        <h4 class="text-center mb-3">Project Manager</h4>
+                        <p class="text-center text-muted">
+                            Execution role that breaks down projects, assigns tasks, and monitors progress.
+                            Manages deadlines and coordinates with team members.
+                        </p>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Break Down Projects</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Assign Tasks</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Monitor Deadlines</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Report Progress</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-tm">
+                            <i class="bi bi-people text-white fs-3"></i>
+                        </div>
+                        <h4 class="text-center mb-3">Team Member</h4>
+                        <p class="text-center text-muted">
+                            Operational role that executes tasks, updates status, and completes work.
+                            Collaborates with team and reports progress.
+                        </p>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Receive Tasks</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Update Status</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Collaborate</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Complete Work</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold mb-3">Complete Workflow Process</h2>
+                <p class="text-muted">From project creation to task completion</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="workflow-step step-1" data-aos="fade-right">
+                        <div class="step-number">1</div>
+                        <h4><i class="bi bi-person-badge me-2"></i>Product Owner Initiates</h4>
+                        <p class="mb-0">Creates project, sets budget and timeline, assigns to Project Manager</p>
+                    </div>
+                    
+                    <div class="text-center my-4" data-aos="zoom-in">
+                        <i class="bi bi-arrow-down-circle fs-1 text-accent" style="color: var(--color-accent);"></i>
+                    </div>
+                    
+                    <div class="workflow-step step-2" data-aos="fade-left">
+                        <div class="step-number">2</div>
+                        <h4><i class="bi bi-clipboard-data me-2"></i>Project Manager Plans</h4>
+                        <p class="mb-0">Breaks down project into tasks, assigns to team members, sets deadlines</p>
+                    </div>
+                    
+                    <div class="text-center my-4" data-aos="zoom-in">
+                        <i class="bi bi-arrow-down-circle fs-1 text-accent" style="color: var(--color-accent);"></i>
+                    </div>
+                    
+                    <div class="workflow-step step-3" data-aos="fade-right">
+                        <div class="step-number">3</div>
+                        <h4><i class="bi bi-people me-2"></i>Team Member Executes</h4>
+                        <p class="mb-0">Works on tasks, updates progress, completes assignments</p>
+                    </div>
+                    
+                    <div class="text-center my-4" data-aos="zoom-in">
+                        <i class="bi bi-arrow-down-circle fs-1 text-accent" style="color: var(--color-accent);"></i>
+                    </div>
+                    
+                    <div class="workflow-step" data-aos="fade-left" style="background: linear-gradient(135deg, #f3e5f5, #e1bee7);">
+                        <div class="step-number">4</div>
+                        <h4><i class="bi bi-check-circle me-2"></i>Project Completion</h4>
+                        <p class="mb-0">PO reviews results, PM provides final report, Team gets recognition</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center" data-aos="zoom-in">
+                    <div class="p-5 rounded" style="background: linear-gradient(135deg, var(--color-secondary), #285c65); color: white;">
+                        <h2 class="fw-bold mb-3">Ready to Streamline Your Workflow?</h2>
+                        <p class="mb-4">Join thousands of teams who have improved their productivity with TaskVision</p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="register.html" class="btn btn-light btn-lg">
+                                <i class="bi bi-person-plus me-2"></i>Get Started Free
+                            </a>
+                            <a href="login.html" class="btn btn-outline-light btn-lg">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Login Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3><i class="bi bi-kanban-fill me-2"></i>TaskVision</h3>
+                    <p class="mt-3">Complete workflow management system for modern teams.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none">Home</a></li>
+                        <li><a href="#features" class="text-light text-decoration-none">Features</a></li>
+                        <li><a href="#workflow" class="text-light text-decoration-none">Workflow</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Get Started</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="login.html" class="text-light text-decoration-none">Login</a></li>
+                        <li><a href="register.html" class="text-light text-decoration-none">Register</a></li>
+                        <li><a href="login.html" class="text-light text-decoration-none">Demo</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p class="mb-0">© 2024 TaskVision. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        // Initialize database
+        function initDatabase() {
+            if (!localStorage.getItem('taskvision_users')) {
+                const users = [
+                    {
+                        id: 1,
+                        username: 'po@example.com',
+                        password: '123456',
+                        role: 'Product Owner',
+                        name: 'John Smith',
+                        email: 'po@example.com',
+                        phone: '+1 234 567 8900',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        username: 'pm@example.com',
+                        password: '123456',
+                        role: 'Project Manager',
+                        name: 'Sarah Johnson',
+                        email: 'pm@example.com',
+                        phone: '+1 234 567 8901',
+                        reportsTo: 1,
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 3,
+                        username: 'tm@example.com',
+                        password: '123456',
+                        role: 'Team Member',
+                        name: 'Alex Chen',
+                        email: 'tm@example.com',
+                        phone: '+1 234 567 8902',
+                        reportsTo: 2,
+                        skills: ['Frontend', 'JavaScript'],
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 4,
+                        username: 'tm2@example.com',
+                        password: '123456',
+                        role: 'Team Member',
+                        name: 'Maria Garcia',
+                        email: 'tm2@example.com',
+                        phone: '+1 234 567 8903',
+                        reportsTo: 2,
+                        skills: ['Backend', 'Python'],
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('taskvision_users', JSON.stringify(users));
+            }
+
+            if (!localStorage.getItem('taskvision_projects')) {
+                const projects = [
+                    {
+                        id: 1,
+                        name: 'E-commerce Platform Launch',
+                        description: 'Launch new e-commerce platform with payment integration and inventory management',
+                        status: 'active',
+                        priority: 'high',
+                        createdBy: 1,
+                        assignedTo: 2,
+                        startDate: '2024-01-15',
+                        endDate: '2024-03-31',
+                        progress: 65,
+                        budget: 50000,
+                        teamMembers: [3, 4],
+                        tags: ['e-commerce', 'web', 'payment'],
+                        createdAt: '2024-01-10'
+                    }
+                ];
+                localStorage.setItem('taskvision_projects', JSON.stringify(projects));
+            }
+
+            if (!localStorage.getItem('taskvision_tasks')) {
+                const tasks = [
+                    {
+                        id: 1,
+                        projectId: 1,
+                        title: 'Design Database Schema',
+                        description: 'Create optimized database schema for e-commerce platform',
+                        status: 'completed',
+                        priority: 'high',
+                        createdBy: 2,
+                        assignedTo: 2,
+                        assignedToMember: 4,
+                        startDate: '2024-01-15',
+                        dueDate: '2024-01-25',
+                        actualCompletion: '2024-01-22',
+                        estimatedHours: 40,
+                        actualHours: 35,
+                        stage: 'planning',
+                        tags: ['database', 'backend']
+                    }
+                ];
+                localStorage.setItem('taskvision_tasks', JSON.stringify(tasks));
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initDatabase();
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

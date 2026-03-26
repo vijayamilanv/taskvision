@@ -1,0 +1,269 @@
+:root {
+    /* 60-30-10 Color System */
+    --color-dominant: #f3f6f6;
+    --color-secondary: #36747d;
+    --color-accent: #33ccab;
+
+    /* Text Colors */
+    --text-on-dominant: #36747d;
+    --text-on-secondary: #ffffff;
+    --text-on-accent: #000000;
+}
+
+.login-wrapper {
+    background-color: var(--color-dominant);
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.login-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    min-height: 600px;
+}
+
+.login-left {
+    background: linear-gradient(135deg, var(--color-secondary), #285c65);
+    color: white;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.login-right {
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.badge-po {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.badge-pm {
+    background: rgba(240, 147, 251, 0.1);
+    color: #f093fb;
+}
+
+.badge-tm {
+    background: rgba(79, 172, 254, 0.1);
+    color: #4facfe;
+}
+
+.demo-account {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.demo-account:hover {
+    border-color: var(--color-accent);
+    background-color: rgba(51, 204, 171, 0.05);
+    transform: translateY(-2px);
+}
+
+.btn-login {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--text-on-accent);
+    font-weight: 600;
+    padding: 12px 30px;
+    border-radius: 50px;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.btn-login:hover {
+    background-color: #28b79d;
+    border-color: #28b79d;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(51, 204, 171, 0.3);
+}
+
+.form-control:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 0.25rem rgba(51, 204, 171, 0.25);
+}
+
+.register-link {
+    color: var(--color-secondary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.password-input-group {
+    position: relative;
+}
+
+/* LeadBot Styles for TaskVision Login Page */
+.ai-chat-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: #a456bf; 
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(164, 86, 191, 0.4);
+    z-index: 2000;
+    transition: all 0.3s ease;
+}
+
+.ai-chat-container {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 380px;
+    height: 560px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: none;
+}
+
+.ai-chat-header {
+    background: #a456bf;
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #4caf50;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.ai-chat-messages {
+    flex-grow: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #ffffff;
+}
+
+.chat-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.ai-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #a456bf;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+
+.chat-message {
+    max-width: 80%;
+    padding: 14px 18px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.message-ai {
+    background: #f3f4f6;
+    color: #333;
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+}
+
+.message-user {
+    background: #a456bf;
+    color: white;
+    border-radius: 18px;
+    border-top-right-radius: 4px;
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.ai-chat-input {
+    padding: 15px 24px;
+    border-top: 1px solid #f1f1f1;
+    background: white;
+}
+
+.ai-chat-footer {
+    padding: 8px 15px;
+    font-size: 11px;
+    color: #ccc;
+    text-align: right;
+    border-top: 1px solid #fafafa;
+}
+
+.typing-indicator {
+    padding: 10px 0;
+    font-size: 12px;
+    color: #999;
+}

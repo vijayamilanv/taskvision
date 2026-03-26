@@ -1,0 +1,11 @@
+django
+djangorestframework
+django-cors-headers
+pymysql
+python-dotenv
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-generativeai
+requests
+pytz

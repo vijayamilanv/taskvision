@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Owner Dashboard | TaskVision</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* 60-30-10 Color System */
+            --color-dominant: #f3f6f6;
+            --color-secondary: #36747d;
+            --color-accent: #33ccab;
+
+            /* Text Colors */
+            --text-on-dominant: #36747d;
+            --text-on-secondary: #ffffff;
+            --text-on-accent: #000000;
+        }
+
+        body {
+            background-color: var(--color-dominant);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--color-secondary), #285c65) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--color-secondary), #285c65);
+            color: white;
+            min-height: 100vh;
+            width: 280px;
+            position: fixed;
+            transition: all 0.3s;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar.collapsed+.main-content {
+            margin-left: 80px;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-link i {
+            width: 24px;
+            margin-right: 10px;
+        }
+
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            border: 2px solid rgba(51, 204, 171, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .icon-projects {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .icon-budget {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .icon-approvals {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .icon-progress {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--color-accent);
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .badge-status {
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        .badge-pending {
+            background: rgba(255, 152, 0, 0.1);
+            color: #ff9800;
+        }
+
+        .badge-completed {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+        }
+
+        .btn-primary {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+            color: var(--text-on-accent);
+            font-weight: 600;
+            padding: 10px 25px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #28b79d;
+            border-color: #28b79d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 204, 171, 0.3);
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            background-color: var(--color-accent);
+            border-radius: 5px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f5576c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* LeadBot Styles for TaskVision */
+        .ai-chat-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: #a456bf; 
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(164, 86, 191, 0.4);
+            z-index: 2000;
+            transition: all 0.3s ease;
+        }
+
+        .ai-chat-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 560px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: none;
+        }
+
+        .ai-chat-header {
+            background: #a456bf;
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .ai-chat-messages {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: #ffffff;
+        }
+
+        .chat-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .ai-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #a456bf;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 14px 18px;
+            font-size: 14.5px;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .message-ai {
+            background: #f3f4f6;
+            color: #333;
+            border-radius: 18px;
+            border-top-left-radius: 4px;
+        }
+
+        .message-user {
+            background: #a456bf;
+            color: white;
+            border-radius: 18px;
+            border-top-right-radius: 4px;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .ai-chat-input {
+            padding: 15px 24px;
+            border-top: 1px solid #f1f1f1;
+            background: white;
+        }
+
+        .ai-chat-footer {
+            padding: 8px 15px;
+            font-size: 11px;
+            color: #ccc;
+            text-align: right;
+            border-top: 1px solid #fafafa;
+        }
+
+        .typing-indicator {
+            padding: 10px 0;
+            font-size: 12px;
+            color: #999;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="text-decoration-none text-white d-flex align-items-center">
+                <div class="me-3">
+                    <i class="bi bi-kanban-fill fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0">TaskVision</h5>
+                    <small class="text-white-50">Product Owner</small>
+                </div>
+            </a>
+        </div>
+
+        <div class="mt-4">
+            <div class="nav-item">
+                <a href="#" class="nav-link active" id="dashboardLink" onclick="showSection('dashboard')">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="#projects" class="nav-link" onclick="showSection('projects')">
+                    <i class="bi bi-briefcase"></i>
+                    <span class="nav-text">Projects</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="#approvals" class="nav-link" onclick="showSection('approvals')">
+                    <i class="bi bi-check-circle"></i>
+                    <span class="nav-text">Approvals</span>
+
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="#team" class="nav-link" onclick="showSection('team')">
+                    <i class="bi bi-people"></i>
+                    <span class="nav-text">Team</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="#reports" class="nav-link" onclick="showSection('reports')">
+                    <i class="bi bi-graph-up"></i>
+                    <span class="nav-text">Reports</span>
+                </a>
+            </div>
+
+            <div class="nav-item">
+                <a href="#profile" class="nav-link" onclick="showSection('profile')">
+                    <i class="bi bi-gear"></i>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </div>
+
+            <div class="nav-item mt-auto">
+                <a href="#" class="nav-link text-danger" onclick="logout()">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-light bg-white rounded shadow-sm mb-4">
+            <div class="container-fluid">
+                <button class="btn" onclick="toggleSidebar()">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+
+                <div class="d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-bell"></i>
+                            <span class="notification-badge" id="notificationCount">0</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" id="notificationDropdown">
+                            <!-- Notifications will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button"
+                            data-bs-toggle="dropdown">
+                            <div class="me-2">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 35px; height: 35px;">
+                                    <i class="bi bi-person text-white"></i>
+                                </div>
+                            </div>
+                            <div class="text-start">
+                                <div class="fw-bold" id="userName"></div>
+                                <small class="text-muted">Product Owner</small>
+                            </div>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#" onclick="showSection('profile')">
+                                <i class="bi bi-person me-2"></i>Profile
+                            </a>
+                            <a class="dropdown-item" href="#" onclick="showSection('profile')">
+                                <i class="bi bi-gear me-2"></i>Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#" onclick="logout()">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardSection">
+            <!-- Welcome Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="p-4 rounded"
+                        style="background: linear-gradient(135deg, var(--color-secondary), #285c65); color: white;">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h2 class="fw-bold mb-3" id="greeting"></h2>
+                                <p class="mb-0">Strategic oversight of all projects and team performance</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-light" onclick="createNewProject()">
+                                    <i class="bi bi-plus-circle me-2"></i>New Project
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card" data-aos="fade-up">
+                        <div class="stat-icon icon-projects">
+                            <i class="bi bi-briefcase text-white"></i>
+                        </div>
+                        <h3 class="mb-2" id="totalProjects">0</h3>
+                        <p class="text-muted mb-0">Total Projects</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="stat-icon icon-budget">
+                            <i class="bi bi-cash text-white"></i>
+                        </div>
+                        <h3 class="mb-2" id="totalBudget">$0</h3>
+                        <p class="text-muted mb-0">Total Budget</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="stat-icon icon-approvals">
+                            <i class="bi bi-clock-history text-white"></i>
+                        </div>
+                        <h3 class="mb-2" id="pendingApprovals">0</h3>
+                        <p class="text-muted mb-0">Pending Approvals</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="stat-icon icon-progress">
+                            <i class="bi bi-graph-up-arrow text-white"></i>
+                        </div>
+                        <h3 class="mb-2" id="avgProgress">0%</h3>
+                        <p class="text-muted mb-0">Average Progress</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="chart-container" data-aos="fade-right">
+                        <h5 class="mb-3">Project Progress Overview</h5>
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="chart-container" data-aos="fade-left">
+                        <h5 class="mb-3">Project Status</h5>
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Projects -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card" data-aos="fade-up">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-briefcase me-2"></i>Recent Projects</h5>
+                            <a href="#projects" class="btn btn-sm btn-outline-primary"
+                                onclick="showSection('projects')">
+                                View All
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div id="recentProjects"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section (Hidden) -->
+        <div id="projectsSection" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3><i class="bi bi-briefcase me-2"></i>All Projects</h3>
+                <button class="btn btn-primary" onclick="createNewProject()">
+                    <i class="bi bi-plus-circle me-2"></i>New Project
+                </button>
+            </div>
+            <div id="allProjects"></div>
+        </div>
+
+        <!-- Approvals Section (Hidden) -->
+        <div id="approvalsSection" style="display: none;">
+            <h3 class="mb-4"><i class="bi bi-check-circle me-2"></i>Approval Requests</h3>
+            <div id="approvalRequests"></div>
+        </div>
+
+        <!-- Team Section (Hidden) -->
+        <div id="teamSection" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="mb-0"><i class="bi bi-people me-2"></i>Team Structure</h3>
+                <div style="width: 250px;">
+                    <select id="pmFilterDropdown" class="form-select" onchange="renderTeamStructure(this.value)">
+                        <option value="all">All Project Managers</option>
+                    </select>
+                </div>
+            </div>
+            <div id="teamStructure"></div>
+        </div>
+
+        <!-- Reports Section (Hidden) -->
+        <div id="reportsSection" style="display: none;">
+            <h3 class="mb-4"><i class="bi bi-graph-up me-2"></i>Reports & Analytics</h3>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="chart-container">
+                        <h5 class="mb-3">Budget vs Progress</h5>
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="chart-container">
+                        <h5 class="mb-3">Team Performance</h5>
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section (Hidden) -->
+        <div id="profileSection" style="display: none;">
+            <h3 class="mb-4"><i class="bi bi-person me-2"></i>Profile & Settings</h3>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-4">Account Information</h5>
+                    <div id="profileInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        const API_URL = 'http://127.0.0.1:8000/api';
+        let user;
+        let projects = [];
+        let tasks = [];
+        let allPms = [];
+        let allTms = [];
+        let projectsChart = null;
+        let statusChart = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const userData = localStorage.getItem('taskvision_user');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+            user = JSON.parse(userData);
+
+            if (user.role !== 'PO' && user.role !== 'Product Owner') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('userName').textContent = user.name || user.username;
+            document.getElementById('greeting').textContent = `Welcome, ${user.name || user.username}`;
+
+            loadDashboard();
+            loadNotifications();
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('collapsed');
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('projectsSection').style.display = 'none';
+            document.getElementById('approvalsSection').style.display = 'none';
+            document.getElementById('teamSection').style.display = 'none';
+            document.getElementById('reportsSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show selected section and set active nav link
+            document.getElementById(`${sectionId}Section`).style.display = 'block';
+            document.querySelector(`a[onclick="showSection('${sectionId}')"]`)?.classList.add('active');
+
+            if (sectionId === 'dashboard') {
+                document.getElementById('dashboardLink').classList.add('active');
+            }
+
+            // Load section-specific data
+            switch (sectionId) {
+                case 'projects':
+                    loadAllProjects();
+                    break;
+                case 'approvals':
+                    loadApprovalRequests();
+                    break;
+                case 'team':
+                    loadTeamStructure();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+                case 'profile':
+                    loadProfileInfo();
+                    break;
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+            }
+        }
+
+        async function loadDashboard() {
+            try {
+                // Fetch Projects
+                const projRes = await fetch(`${API_URL}/projects/`, {
+                    headers: { 'Authorization': `Token ${user.token}` }
+                });
+                if (!projRes.ok) throw new Error('Failed to fetch projects');
+                projects = await projRes.json();
+
+                // Calculate Stats
+                document.getElementById('totalProjects').textContent = projects.length;
+
+                const activeCount = projects.filter(p => p.status === 'active').length;
+                const completedCount = projects.filter(p => p.status === 'completed').length;
+                const pendingCount = projects.filter(p => p.status === 'pending').length;
+
+                document.getElementById('pendingApprovals').textContent = pendingCount;
+
+
+                // Assuming backend doesn't return tasks by default, fetch them to calculate progress
+                const tasksRes = await fetch(`${API_URL}/tasks/`, { headers: { 'Authorization': `Token ${user.token}` } });
+                tasks = await tasksRes.json();
+
+                // Average Progress
+                let totalProgress = 0;
+                let activeProjectCount = 0;
+                projects.forEach(p => {
+                    const pTasks = tasks.filter(t => t.project === p.id);
+                    if (pTasks.length > 0) {
+                        const comp = pTasks.filter(t => t.status === 'completed').length;
+                        const pProg = Math.round((comp / pTasks.length) * 100);
+                        p.progress = pProg; // Store back in object for charts
+                        totalProgress += pProg;
+                        activeProjectCount++;
+                    } else {
+                        p.progress = 0;
+                    }
+                });
+
+                const avgProg = activeProjectCount > 0 ? Math.round(totalProgress / activeProjectCount) : 0;
+                document.getElementById('avgProgress').textContent = `${avgProg}%`;
+
+                const totalBudget = projects.reduce((acc, curr) => acc + parseFloat(curr.budget || 0), 0);
+                document.getElementById('totalBudget').textContent = `$${totalBudget.toLocaleString()}`;
+
+                // Create charts
+                initCharts();
+                loadRecentProjects();
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                if (error.message.includes('401')) {
+                    localStorage.removeItem('taskvision_user');
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+
+        function loadRecentProjects() {
+            const recent = projects.slice(0, 5);
+            const html = recent.map(project => `
+                <div class="project-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <h6 class="mb-1">${project.name}</h6>
+                            <p class="text-muted small mb-0">${project.description.substring(0, 50)}...</p>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge-status badge-${project.status === 'active' ? 'active' : project.status === 'pending' ? 'pending' : 'completed'}">
+                                ${project.status}
+                            </span>
+                        </div>
+                        <div class="col-md-2">
+                            <small>Budget: $${parseFloat(project.budget || 0).toLocaleString()}</small>
+                        </div>
+                        <div class="col-md-2 text-end">
+                             <small>${project.progress || 0}%</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('recentProjects').innerHTML = html || '<p class="text-muted text-center">No projects yet</p>';
+        }
+
+        function initCharts() {
+            // Progress Chart
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            if (projectsChart) projectsChart.destroy();
+
+            const projectNames = projects.map(p => p.name);
+            const projectProgress = projects.map(p => p.progress || 0);
+
+            projectsChart = new Chart(progressCtx, {
+                type: 'bar',
+                data: {
+                    labels: projectNames,
+                    datasets: [{
+                        label: 'Progress %',
+                        data: projectProgress,
+                        backgroundColor: '#33ccab',
+                        borderColor: '#28b79d',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Status Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            if (statusChart) statusChart.destroy();
+
+            const statusCounts = {
+                active: projects.filter(p => p.status === 'active').length,
+                pending: projects.filter(p => p.status === 'pending').length,
+                completed: projects.filter(p => p.status === 'completed').length
+            };
+
+            statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Pending', 'Completed'],
+                    datasets: [{
+                        data: [statusCounts.active, statusCounts.pending, statusCounts.completed],
+                        backgroundColor: [
+                            '#4caf50',
+                            '#ff9800',
+                            '#2196f3'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+
+        let loadReportsBudgetChart = null;
+        let loadReportsPerfChart = null;
+
+        function loadReports() {
+            if (!projects.length) return;
+
+            const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+            if (loadReportsBudgetChart) loadReportsBudgetChart.destroy();
+
+            const projectNames = projects.map(p => p.name);
+            const projectBudgets = projects.map(p => parseFloat(p.budget || 0));
+
+            loadReportsBudgetChart = new Chart(budgetCtx, {
+                type: 'bar',
+                data: {
+                    labels: projectNames,
+                    datasets: [{
+                        label: 'Budget ($)',
+                        data: projectBudgets,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            const perfCtx = document.getElementById('performanceChart').getContext('2d');
+            if (loadReportsPerfChart) loadReportsPerfChart.destroy();
+
+            const projectProgress = projects.map(p => p.progress || 0);
+
+            loadReportsPerfChart = new Chart(perfCtx, {
+                type: 'line',
+                data: {
+                    labels: projectNames,
+                    datasets: [{
+                        label: 'Performance / Progress %',
+                        data: projectProgress,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+        }
+
+        async function createNewProject() {
+            try {
+                // Fetch users for dropdowns
+                const [pmRes, tmRes] = await Promise.all([
+                    fetch(`${API_URL}/auth/users/?role=PM`, { headers: { 'Authorization': `Token ${user.token}` } }),
+                    fetch(`${API_URL}/auth/users/?role=TM`, { headers: { 'Authorization': `Token ${user.token}` } })
+                ]);
+
+                const projectManagers = await pmRes.json();
+                const teamMembers = await tmRes.json();
+
+                Swal.fire({
+                    title: 'Create New Project',
+                    html: `
+                        <div class="mb-3">
+                            <label class="form-label">Project Name *</label>
+                            <input type="text" id="projectName" class="form-control" placeholder="Enter project name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description *</label>
+                            <textarea id="projectDesc" class="form-control" rows="3" placeholder="Project description" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Assign to Project Manager *</label>
+                                <select id="projectManager" class="form-select" required>
+                                    <option value="">Select PM</option>
+                                    ${projectManagers.map(pm => `<option value="${pm.id}">${pm.first_name} ${pm.last_name} (${pm.username})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Priority</label>
+                                <select id="projectPriority" class="form-select">
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Assign Team Members</label>
+                            <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                ${teamMembers.map(tm => `
+                                    <div class="d-flex justify-content-between align-items-center mb-2 px-2 py-1 border-bottom" style="background: #fdfdfd;">
+                                        <label class="form-check-label flex-grow-1 cursor-pointer" for="tm-${tm.id}" style="cursor: pointer;">
+                                            ${tm.first_name} ${tm.last_name} (${tm.username})
+                                        </label>
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" value="${tm.id}" id="tm-${tm.id}" style="float: none; margin-left: 0;">
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Budget ($)</label>
+                                <input type="number" id="projectBudget" class="form-control" placeholder="50000" min="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" id="startDate" class="form-control">
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Create Project',
+                    width: '700px',
+                    preConfirm: () => {
+                        const name = document.getElementById('projectName').value;
+                        const desc = document.getElementById('projectDesc').value;
+                        const pmId = document.getElementById('projectManager').value;
+
+                        if (!name || !desc || !pmId) {
+                            Swal.showValidationMessage('Please fill all required fields');
+                            return false;
+                        }
+
+                        const selectedTeamMembers = [];
+                        teamMembers.forEach(tm => {
+                            if (document.getElementById(`tm-${tm.id}`).checked) {
+                                selectedTeamMembers.push(tm.id);
+                            }
+                        });
+
+                        return {
+                            name: name,
+                            description: desc,
+                            assigned_to: pmId,
+                            priority: document.getElementById('projectPriority').value,
+                            budget: document.getElementById('projectBudget').value || 0,
+                            start_date: document.getElementById('startDate').value || null,
+                            team_members: selectedTeamMembers,
+                            status: 'active'
+                        };
+                    }
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        try {
+                            const res = await fetch(`${API_URL}/projects/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Token ${user.token}`
+                                },
+                                body: JSON.stringify(result.value)
+                            });
+
+                            if (!res.ok) throw new Error('Failed to create project');
+
+                            Swal.fire('Success!', 'Project created successfully', 'success');
+                            loadDashboard();
+                            if (document.getElementById('projectsSection').style.display === 'block') {
+                                loadAllProjects();
+                            }
+                        } catch (error) {
+                            console.error('Create project error:', error);
+                            Swal.fire('Error', 'Failed to create project', 'error');
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                Swal.fire('Error', 'Failed to load users', 'error');
+            }
+        }
+
+        async function loadAllProjects() {
+            try {
+                const [projRes, pmRes, tmRes] = await Promise.all([
+                    fetch(`${API_URL}/projects/`, { headers: { 'Authorization': `Token ${user.token}` } }),
+                    fetch(`${API_URL}/auth/users/?role=PM`, { headers: { 'Authorization': `Token ${user.token}` } }),
+                    fetch(`${API_URL}/auth/users/?role=TM`, { headers: { 'Authorization': `Token ${user.token}` } })
+                ]);
+
+                projects = await projRes.json();
+                const pms = await pmRes.json();
+                const tms = await tmRes.json();
+
+                const html = projects.map(project => {
+                    const pm = pms.find(u => u.id === project.assigned_to);
+                    const team = tms.filter(u => project.team_members && project.team_members.includes(u.id));
+
+                    return `
+                        <div class="project-card">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <h6 class="mb-1">${project.name}</h6>
+                                    <p class="text-muted small mb-2">${project.description}</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge-status badge-${project.status === 'active' ? 'active' : project.status === 'pending' ? 'pending' : 'completed'}">
+                                            ${project.status}
+                                        </span>
+                                        <small class="ms-3"><i class="bi bi-flag-fill text-${project.priority === 'high' ? 'danger' : project.priority === 'medium' ? 'warning' : 'success'}"></i> 
+                                            ${project.priority}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-2">
+                                        <small><i class="bi bi-person-badge"></i> PM: ${pm ? pm.username : 'Not Assigned'}</small>
+                                    </div>
+                                    <div>
+                                        <small><i class="bi bi-people"></i> Team: ${team.map(u => u.username).join(', ') || 'None'}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <small>Budget: $${parseFloat(project.budget || 0).toLocaleString()}</small>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewProjectDetails(${project.id})">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('allProjects').innerHTML = html || '<p class="text-muted text-center">No projects found</p>';
+            } catch (error) {
+                console.error('Error loading all projects:', error);
+                document.getElementById('allProjects').innerHTML = '<p class="text-danger text-center">Failed to load projects</p>';
+            }
+        }
+
+        async function viewProjectDetails(projectId) {
+            try {
+                const [projRes, tasksRes] = await Promise.all([
+                    fetch(`${API_URL}/projects/${projectId}/`, { headers: { 'Authorization': `Token ${user.token}` } }),
+                    fetch(`${API_URL}/tasks/?project=${projectId}`, { headers: { 'Authorization': `Token ${user.token}` } })
+                ]);
+
+                if (!projRes.ok) throw new Error('Failed to fetch project');
+
+                const project = await projRes.json();
+                const prjTasks = await tasksRes.json();
+
+                const pmName = project.assigned_to_details ? project.assigned_to_details.username : 'Not Assigned';
+
+                Swal.fire({
+                    title: project.name,
+                    html: `
+                        <div class="text-start">
+                            <p><strong>Description:</strong> ${project.description}</p>
+                            <p><strong>Status:</strong> <span class="badge badge-${project.status}">${project.status}</span></p>
+                            <p><strong>Priority:</strong> ${project.priority}</p>
+                            <p><strong>Project Manager:</strong> ${pmName}</p>
+                            <p><strong>Budget:</strong> $${parseFloat(project.budget || 0).toLocaleString()}</p>
+                            <p><strong>Start Date:</strong> ${project.start_date || 'N/A'}</p>
+                            
+                            <h6 class="mt-4">Tasks (${prjTasks.length})</h6>
+                            <div style="max-height: 200px; overflow-y: auto;">
+                                ${prjTasks.map(task => `
+                                    <div class="border-bottom pb-2 mb-2">
+                                        <small><strong>${task.title}</strong></small><br>
+                                        <small class="text-muted">Status: ${task.status} | Priority: ${task.priority}</small>
+                                    </div>
+                                `).join('') || '<small class="text-muted">No tasks in this project</small>'}
+                            </div>
+                        </div>
+                    `,
+                    width: '700px',
+                    showConfirmButton: false,
+                    showCloseButton: true
+                });
+            } catch (error) {
+                console.error('Error viewing project:', error);
+                Swal.fire('Error', 'Failed to load project details', 'error');
+            }
+        }
+
+        async function loadApprovalRequests() {
+            try {
+                const res = await fetch(`${API_URL}/projects/`, { headers: { 'Authorization': `Token ${user.token}` } });
+                const projects = await res.json();
+                const pendingProjects = projects.filter(p => p.status === 'pending');
+
+                const targetCount = document.getElementById('approvalCount');
+                if (targetCount) targetCount.textContent = pendingProjects.length;
+
+                if (pendingProjects.length === 0) {
+                    document.getElementById('approvalRequests').innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="bi bi-check-circle fs-1 text-success mb-3"></i>
+                            <h5>No Pending Approvals</h5>
+                        </div>`;
+                    return;
+                }
+
+                const html = pendingProjects.map(p => `
+                    <div class="project-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">${p.name}</h6>
+                                <p class="text-muted small mb-0">${p.description}</p>
+                                <small class="text-muted">Budget: $${parseFloat(p.budget || 0).toLocaleString()}</small>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-success btn-sm" onclick="approveRequest(${p.id})">Approve</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectRequest(${p.id})">Reject</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('approvalRequests').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading approvals:', error);
+            }
+        }
+
+        async function approveRequest(projectId) {
+            try {
+                const res = await fetch(`${API_URL}/projects/${projectId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${user.token}`
+                    },
+                    body: JSON.stringify({ status: 'active' })
+                });
+
+                if (!res.ok) throw new Error('Failed to approve');
+
+                Swal.fire('Approved', 'Project approved successfully', 'success');
+                loadDashboard();
+                loadApprovalRequests();
+            } catch (error) {
+                Swal.fire('Error', 'Failed to approve project', 'error');
+            }
+        }
+
+        async function rejectRequest(projectId) {
+            if (!confirm('Are you sure you want to reject this project?')) return;
+            try {
+                const res = await fetch(`${API_URL}/projects/${projectId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Token ${user.token}`
+                    }
+                });
+
+                if (!res.ok) throw new Error('Failed to reject');
+
+                Swal.fire('Rejected', 'Project rejected', 'success');
+                loadDashboard();
+                loadApprovalRequests();
+            } catch (error) {
+                Swal.fire('Error', 'Failed to reject project', 'error');
+            }
+        }
+
+        async function loadTeamStructure() {
+            try {
+                if (allPms.length === 0 || allTms.length === 0) {
+                    const [pmRes, tmRes, projRes] = await Promise.all([
+                        fetch(`${API_URL}/auth/users/?role=PM`, { headers: { 'Authorization': `Token ${user.token}` } }),
+                        fetch(`${API_URL}/auth/users/?role=TM`, { headers: { 'Authorization': `Token ${user.token}` } }),
+                        fetch(`${API_URL}/projects/`, { headers: { 'Authorization': `Token ${user.token}` } })
+                    ]);
+
+                    allPms = await pmRes.json();
+                    allTms = await tmRes.json();
+                    projects = await projRes.json();
+
+                    const dropdown = document.getElementById('pmFilterDropdown');
+                    dropdown.innerHTML = '<option value="all">All Project Managers</option>';
+                    allPms.forEach(pm => {
+                        dropdown.innerHTML += `<option value="${pm.id}">${pm.username} (${pm.email})</option>`;
+                    });
+                }
+                
+                const filterVal = document.getElementById('pmFilterDropdown').value;
+                renderTeamStructure(filterVal);
+            } catch (error) {
+                console.error('Error loading team:', error);
+            }
+        }
+
+        function renderTeamStructure(pmFilterId) {
+            let pmsToRender = allPms;
+            let tmsToRender = allTms;
+
+            if (pmFilterId !== 'all') {
+                pmsToRender = allPms.filter(pm => pm.id == pmFilterId);
+                
+                const tmIds = new Set();
+                const pmProjects = projects.filter(p => p.assigned_to == pmFilterId);
+                pmProjects.forEach(p => {
+                    p.team_members.forEach(id => tmIds.add(id));
+                });
+                
+                tmsToRender = allTms.filter(tm => tmIds.has(tm.id));
+            }
+
+            let teamHtml = `
+                <div class="mb-4">
+                    <h5 class="mb-3">${pmFilterId === 'all' ? 'Project Managers' : 'Selected Project Manager'}</h5>
+            `;
+
+            pmsToRender.forEach(pm => {
+                const pmProjects = projects.filter(p => p.assigned_to === pm.id);
+                const teamCount = new Set(pmProjects.flatMap(p => p.team_members)).size;
+
+                teamHtml += `
+                    <div class="project-card mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="bi bi-person-badge text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">${pm.username}</h6>
+                                        <p class="text-muted small mb-0">${pm.email}</p>
+                                        <small>Projects: ${pmProjects.length} | Team Size: ${teamCount}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            teamHtml += `
+                </div>
+                <div class="mb-4">
+                    <h5 class="mb-3">${pmFilterId === 'all' ? 'All Team Members' : 'Assigned Team Members'}</h5>
+                    <div class="row">
+            `;
+
+            tmsToRender.forEach(tm => {
+                teamHtml += `
+                    <div class="col-md-6 mb-3">
+                        <div class="project-card">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <div class="bg-info rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-person text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">${tm.username}</h6>
+                                    <p class="text-muted small mb-0">${tm.email}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (tmsToRender.length === 0) {
+                teamHtml += `<div class="col-12"><p class="text-muted">No team members assigned under this manager.</p></div>`;
+            }
+
+            teamHtml += `</div></div>`;
+            document.getElementById('teamStructure').innerHTML = teamHtml;
+        }
+
+        async function loadNotifications() {
+            try {
+                const res = await fetch(`${API_URL}/notifications/`, { headers: { 'Authorization': `Token ${user.token}` } });
+                if (!res.ok) return;
+
+                const notifications = await res.json();
+                const unread = notifications.filter(n => !n.is_read);
+
+                const countEl = document.getElementById('notificationCount');
+                if (countEl) {
+                    countEl.textContent = unread.length > 0 ? unread.length : '';
+                    countEl.style.display = unread.length > 0 ? 'flex' : 'none';
+                }
+                const dropdown = document.getElementById('notificationDropdown');
+
+                if (unread.length === 0) {
+                    dropdown.innerHTML = `
+                        <li class="dropdown-item text-center py-3">
+                            <small class="text-muted">No new notifications</small>
+                        </li>`;
+                } else {
+                    dropdown.innerHTML = unread.slice(0, 5).map(n => `
+                        <li><a class="dropdown-item" href="#" onclick="markNotificationRead(${n.id})">
+                            <small class="d-block fw-bold">${n.title}</small>
+                            <small class="text-muted">${n.message.substring(0, 40)}...</small>
+                        </a></li>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        async function markNotificationRead(id) {
+            try {
+                await fetch(`${API_URL}/notifications/${id}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${user.token}`
+                    },
+                    body: JSON.stringify({ is_read: true })
+                });
+                loadNotifications();
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        function loadProfileInfo() {
+            document.getElementById('profileInfo').innerHTML = `
+                <div class="row align-items-center mb-4">
+                    <div class="col-auto">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-person text-white fs-1"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h4>${user.name || user.username} <i class="bi bi-patch-check-fill text-primary ms-1 fs-5" title="Verified Account"></i></h4>
+                        <p class="text-muted mb-0">${user.email}</p>
+                        <span class="badge bg-primary mt-2">Product Owner</span>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">First Name</label>
+                        <p class="fw-bold">${user.first_name || 'Not provided'}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Last Name</label>
+                        <p class="fw-bold">${user.last_name || 'Not provided'}</p>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted">Phone Number</label>
+                        <p class="fw-bold">${user.phone || 'Not provided'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function logout() {
+            localStorage.removeItem('taskvision_user');
+            window.location.href = 'login.html';
+        }
+        function toggleAIChat() {
+            const chat = document.getElementById('aiChatContainer');
+            const isVisible = chat.style.display === 'flex';
+            chat.style.display = isVisible ? 'none' : 'flex';
+            if (!isVisible) {
+                document.getElementById('aiInput').focus();
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            input.value = '';
+            const chatMessages = document.getElementById('aiChatMessages');
+            chatMessages.innerHTML += `<div class="chat-message message-user">${message}</div>`;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            document.getElementById('typingIndicator').style.display = 'block';
+
+            try {
+                const response = await fetch('/api/ai/chat/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${localStorage.getItem('taskvision_user') ? JSON.parse(localStorage.getItem('taskvision_user')).token : ''}`
+                    },
+                    body: JSON.stringify({ 
+                        message,
+                        context: {
+                            totalProjects: projects ? projects.length : 0,
+                            currentTab: 'Strategy Dashboard'
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                chatMessages.innerHTML += `
+                    <div class="chat-row">
+                        <div class="ai-avatar"><i class="bi bi-robot"></i></div>
+                        <div class="chat-message message-ai">${data.reply}</div>
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error('AI Error:', error);
+                chatMessages.innerHTML += `
+                    <div class="chat-row">
+                        <div class="ai-avatar bg-danger"><i class="bi bi-exclamation-triangle"></i></div>
+                        <div class="chat-message message-ai bg-danger text-white">Neural connection lost. Please try again.</div>
+                    </div>
+                `;
+            } finally {
+                document.getElementById('typingIndicator').style.display = 'none';
+            }
+        }
+    </script>
+    <!-- LeadBot Components -->
+    <div class="ai-chat-toggle" onclick="toggleAIChat()">
+        <i class="bi bi-robot"></i>
+    </div>
+
+    <div class="ai-chat-container" id="aiChatContainer">
+        <div class="ai-chat-header">
+            <div class="d-flex align-items-center">
+                <div class="ai-avatar bg-white text-primary me-2 shadow-sm" style="width: 35px; height: 35px;">
+                    <i class="bi bi-robot fs-5" style="color: #a456bf"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">LeadBot</h6>
+                    <div class="d-flex align-items-center"><span class="status-dot"></span><small class="opacity-75">Online Now</small></div>
+                </div>
+            </div>
+            <div onclick="toggleAIChat()" style="cursor: pointer; opacity: 0.8;"><i class="bi bi-x-lg fs-5"></i></div>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="chat-row">
+                <div class="ai-avatar"><i class="bi bi-robot"></i></div>
+                <div class="chat-message message-ai">
+                    Greetings, Product Owner! LeadBot here. How can I assist you with your project strategy today? 📈
+                </div>
+            </div>
+        </div>
+        <div class="typing-indicator px-4" id="typingIndicator">
+            LeadBot is thinking...
+        </div>
+        <div class="ai-chat-input">
+            <div class="input-group">
+                <input type="text" class="form-control border-0 bg-transparent shadow-none" id="aiInput" placeholder="Reply to LeadBot..." onkeypress="handleKeyPress(event)">
+                <button class="btn btn-link text-primary p-0" onclick="sendMessage()" style="color: #a456bf !important">
+                    <i class="bi bi-lightning-charge-fill fs-4 text-warning"></i>
+                </button>
+            </div>
+        </div>
+        <div class="ai-chat-footer">
+            We're <i class="bi bi-lightning-fill text-warning"></i> by TaskVision
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | TaskVision</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Google Sign-in -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            /* 60-30-10 Color System */
+            --color-dominant: #f3f6f6;
+            --color-secondary: #36747d;
+            --color-accent: #33ccab;
+
+            /* Text Colors */
+            --text-on-dominant: #36747d;
+            --text-on-secondary: #ffffff;
+            --text-on-accent: #000000;
+        }
+
+        body {
+            background-color: var(--color-dominant);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        .register-left {
+            background: linear-gradient(135deg, var(--color-secondary), #285c65);
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .register-right {
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .role-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .role-card:hover {
+            border-color: var(--color-accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(51, 204, 171, 0.1);
+        }
+
+        .role-card.selected {
+            border-color: var(--color-accent);
+            background-color: rgba(51, 204, 171, 0.05);
+        }
+
+        .role-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+        }
+
+        .role-po {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .role-pm {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .role-tm {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-register {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+            color: var(--text-on-accent);
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .btn-register:hover {
+            background-color: #28b79d;
+            border-color: #28b79d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 204, 171, 0.3);
+        }
+
+        .form-control:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 0.25rem rgba(51, 204, 171, 0.25);
+        }
+
+        .login-link {
+            color: var(--color-secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .step.active {
+            background-color: var(--color-accent);
+            color: white;
+        }
+
+        .step.inactive {
+            background-color: #e9ecef;
+            color: #6c757d;
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background-color: #e9ecef;
+            margin: 0 10px;
+        }
+
+        /* LeadBot Styles for TaskVision Registration */
+        .ai-chat-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: #a456bf; 
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(164, 86, 191, 0.4);
+            z-index: 2000;
+            transition: all 0.3s ease;
+        }
+
+        .ai-chat-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 560px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: none;
+        }
+
+        .ai-chat-header {
+            background: #a456bf;
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .ai-chat-messages {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: #ffffff;
+        }
+
+        .chat-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .ai-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #a456bf;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 14px 18px;
+            font-size: 14.5px;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .message-ai {
+            background: #f3f4f6;
+            color: #333;
+            border-radius: 18px;
+            border-top-left-radius: 4px;
+        }
+
+        .message-user {
+            background: #a456bf;
+            color: white;
+            border-radius: 18px;
+            border-top-right-radius: 4px;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .ai-chat-input {
+            padding: 15px 24px;
+            border-top: 1px solid #f1f1f1;
+            background: white;
+        }
+
+        .ai-chat-footer {
+            padding: 8px 15px;
+            font-size: 11px;
+            color: #ccc;
+            text-align: right;
+            border-top: 1px solid #fafafa;
+        }
+
+        .typing-indicator {
+            padding: 10px 0;
+            font-size: 12px;
+            color: #999;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-container">
+        <div class="register-card" data-aos="zoom-in">
+            <div class="row g-0">
+                <!-- Left Side - Welcome & Info -->
+                <div class="col-lg-5">
+                    <div class="register-left">
+                        <div class="mb-5">
+                            <a href="index.html" class="text-white text-decoration-none">
+                                <i class="bi bi-kanban-fill fs-3 me-2"></i>
+                                <span class="fs-3 fw-bold">TaskVision</span>
+                            </a>
+                        </div>
+
+                        <h1 class="fw-bold mb-4">Join Our Workflow Community</h1>
+                        <p class="mb-4">
+                            Register as a Product Owner, Project Manager, or Team Member to streamline your workflow
+                            management.
+                        </p>
+
+                        <div class="mt-4">
+                            <h5 class="mb-3">Why Join TaskVision?</h5>
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0">Seamless collaboration between roles</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0">Real-time project tracking</p>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0">Complete workflow visibility</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-5">
+                            <p class="mb-2">Already have an account?</p>
+                            <a href="login.html" class="btn btn-outline-light">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Login Here
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Registration Form -->
+                <div class="col-lg-7">
+                    <div class="register-right">
+                        <div class="step-indicator">
+                            <div class="step active">1</div>
+                            <div class="step-line"></div>
+                            <div class="step inactive">2</div>
+                            <div class="step-line"></div>
+                            <div class="step inactive">3</div>
+                        </div>
+
+                        <h3 class="fw-bold mb-1">Create Account</h3>
+                        <p class="text-muted mb-4">Step 1: Choose your role</p>
+
+                        <!-- Role Selection -->
+                        <div id="roleSelection">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <div class="role-card" onclick="selectRole('Product Owner')" id="rolePo">
+                                        <div class="role-icon role-po">
+                                            <i class="bi bi-person-badge text-white"></i>
+                                        </div>
+                                        <h6>Product Owner</h6>
+                                        <p class="small text-muted mb-0">Define projects and priorities</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="role-card" onclick="selectRole('Project Manager')" id="rolePm">
+                                        <div class="role-icon role-pm">
+                                            <i class="bi bi-clipboard-data text-white"></i>
+                                        </div>
+                                        <h6>Project Manager</h6>
+                                        <p class="small text-muted mb-0">Manage tasks and deadlines</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="role-card" onclick="selectRole('Team Member')" id="roleTm">
+                                        <div class="role-icon role-tm">
+                                            <i class="bi bi-people text-white"></i>
+                                        </div>
+                                        <h6>Team Member</h6>
+                                        <p class="small text-muted mb-0">Execute tasks and update status</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Selected Role</label>
+                                <div class="form-control bg-light" id="selectedRoleDisplay">
+                                    <span class="text-muted">Click on a role card to select</span>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-register w-100 mb-4" onclick="proceedToStep2()" disabled id="nextBtn">
+                                Next Step <i class="bi bi-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+
+                        <!-- Registration Form (Hidden Initially) -->
+                        <form id="registrationForm" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" id="firstName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" id="lastName" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone">
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Password *</label>
+                                    <input type="password" class="form-control" id="password" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Confirm Password *</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                </div>
+                            </div>
+
+                            <!-- Team Member Specific -->
+                            <div id="teamMemberFields" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Skills (comma separated)</label>
+                                    <input type="text" class="form-control" id="skills"
+                                        placeholder="e.g., JavaScript, React, Node.js">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Experience Level</label>
+                                    <select class="form-select" id="experienceLevel">
+                                        <option value="junior">Junior (0-2 years)</option>
+                                        <option value="mid">Mid (2-5 years)</option>
+                                        <option value="senior">Senior (5+ years)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Project Manager Specific -->
+                            <div id="projectManagerFields" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Specialization</label>
+                                    <input type="text" class="form-control" id="specialization"
+                                        placeholder="e.g., Agile, Waterfall, Scrum">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Years of Experience</label>
+                                    <input type="number" class="form-control" id="yearsExperience" min="0" max="50"
+                                        value="0">
+                                </div>
+                            </div>
+
+                            <!-- Product Owner Specific -->
+                            <div id="productOwnerFields" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Company/Organization</label>
+                                    <input type="text" class="form-control" id="company">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Industry</label>
+                                    <input type="text" class="form-control" id="industry"
+                                        placeholder="e.g., Technology, Healthcare, Finance">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="termsAgreement" required>
+                                    <label class="form-check-label" for="termsAgreement">
+                                        I agree to the <a href="#" class="login-link" onclick="Swal.fire('Terms', 'Terms of Service details.', 'info')">Terms of Service</a> and <a
+                                            href="#" class="login-link" onclick="Swal.fire('Privacy', 'Privacy Policy details.', 'info')">Privacy Policy</a>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between gap-3 mt-4">
+                                <button type="button" class="btn btn-outline-secondary rounded-pill fw-bold" style="min-width: 140px;" onclick="backToStep1()">
+                                    <i class="bi bi-arrow-left me-2"></i>Back
+                                </button>
+                                <button type="submit" class="btn btn-register flex-grow-1">
+                                    Create Account <i class="bi bi-person-plus ms-2"></i>
+                                </button>
+                            </div>
+
+                            <div class="d-flex align-items-center mt-4 mb-3">
+                                <hr class="flex-grow-1">
+                                <span class="mx-3 text-muted">OR</span>
+                                <hr class="flex-grow-1">
+                            </div>
+
+                            <div class="text-center d-flex justify-content-center">
+                                <div id="g_id_onload"
+                                    data-client_id="267412102026-gju9gehmhs5ptbdfsfd6s8nk4tiqk286.apps.googleusercontent.com"
+                                    data-context="signup"
+                                    data-ux_mode="popup"
+                                    data-callback="handleCredentialResponse"
+                                    data-auto_prompt="false"
+                                    data-auto_select="false"
+                                    data-itp_support="true">
+                                </div>
+                                <div class="g_id_signin"
+                                    data-type="standard"
+                                    data-shape="pill"
+                                    data-theme="outline"
+                                    data-text="signup_with"
+                                    data-size="large"
+                                    data-logo_alignment="left">
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <p class="text-muted mb-0">
+                                By registering, you agree to our terms and conditions
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        const API_URL = 'http://127.0.0.1:8000/api';
+
+        async function handleCredentialResponse(response) {
+            try {
+                const roleMap = {
+                    'Product Owner': 'PO',
+                    'Project Manager': 'PM',
+                    'Team Member': 'TM'
+                };
+                const apiRole = roleMap[selectedRole] || 'TM';
+
+                const res = await fetch(`${API_URL}/auth/google/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        credential: response.credential,
+                        role: apiRole
+                    })
+                });
+
+                if (!res.ok) {
+                    const errorMsg = await res.json();
+                    throw new Error(errorMsg.error || 'Google Registration Failed');
+                }
+
+                const data = await res.json();
+
+                // Save user data securely
+                const userData = {
+                    token: data.token,
+                    user_id: data.user_id,
+                    role: data.role,
+                    name: data.name,
+                    email: data.email
+                };
+
+                localStorage.setItem('taskvision_user', JSON.stringify(userData));
+
+                Swal.fire({
+                    title: 'Registration Successful!',
+                    html: `
+                        <p>Welcome to TaskVision, ${data.name}!</p>
+                        <p>Redirecting to dashboard...</p>
+                    `,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                }).then(() => {
+                    // Redirect based on role
+                    switch (data.role) {
+                        case 'PO': window.location.href = 'product-owner.html'; break;
+                        case 'PM': window.location.href = 'project-manager.html'; break;
+                        case 'TM': window.location.href = 'team-member.html'; break;
+                        default: window.location.href = 'index.html';
+                    }
+                });
+
+            } catch (error) {
+                console.error('Google Registration error:', error);
+                Swal.fire('Registration Failed', error.message, 'error');
+            }
+        }
+
+        let selectedRole = '';
+
+        function selectRole(role) {
+            selectedRole = role;
+            
+            // Update UI
+            document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
+            document.querySelectorAll('.role-card').forEach(card => {
+                if(card.innerText.includes(role)) {
+                    card.classList.add('selected');
+                }
+            });
+
+            // Update display and enable next button
+            document.getElementById('selectedRoleDisplay').innerHTML = `
+                <strong>${role}</strong> - ${role === 'Product Owner' ? 'Strategic planning and project definition' :
+                    role === 'Project Manager' ? 'Task management and team coordination' :
+                        'Task execution and progress updates'
+                }
+            `;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function proceedToStep2() {
+            if (!selectedRole) {
+                Swal.fire('Error', 'Please select a role first', 'error');
+                return;
+            }
+
+            // Show step 2 indicator
+            document.querySelectorAll('.step')[1].classList.remove('inactive');
+            document.querySelectorAll('.step')[1].classList.add('active');
+            document.querySelectorAll('.step')[2].classList.remove('inactive');
+            document.querySelectorAll('.step')[2].classList.add('active');
+
+            // Show form and hide role selection
+            document.getElementById('roleSelection').style.display = 'none';
+            document.getElementById('registrationForm').style.display = 'block';
+
+            // Update form title
+            document.querySelector('.register-right h3').textContent = 'Complete Registration';
+            document.querySelector('.register-right p').innerHTML = `
+                Registering as: <strong>${selectedRole}</strong>
+            `;
+
+            // Show role-specific fields
+            document.getElementById('teamMemberFields').style.display = 'none';
+            document.getElementById('projectManagerFields').style.display = 'none';
+            document.getElementById('productOwnerFields').style.display = 'none';
+
+            if (selectedRole === 'Team Member') {
+                document.getElementById('teamMemberFields').style.display = 'block';
+            } else if (selectedRole === 'Project Manager') {
+                document.getElementById('projectManagerFields').style.display = 'block';
+            } else if (selectedRole === 'Product Owner') {
+                document.getElementById('productOwnerFields').style.display = 'block';
+            }
+        }
+
+        function backToStep1() {
+            // Show step 1 indicator
+            document.querySelectorAll('.step')[1].classList.add('inactive');
+            document.querySelectorAll('.step')[1].classList.remove('active');
+            document.querySelectorAll('.step')[2].classList.add('inactive');
+            document.querySelectorAll('.step')[2].classList.remove('active');
+
+            // Show role selection and hide form
+            document.getElementById('roleSelection').style.display = 'block';
+            document.getElementById('registrationForm').style.display = 'none';
+
+            // Reset form title
+            document.querySelector('.register-right h3').textContent = 'Create Account';
+            document.querySelector('.register-right p').textContent = 'Step 1: Choose your role';
+        }
+
+        // Form submission
+        document.getElementById('registrationForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (password !== confirmPassword) {
+                Swal.fire('Error', 'Passwords do not match', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                Swal.fire('Error', 'Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            // Map role name to API code
+            const roleMap = {
+                'Product Owner': 'PO',
+                'Project Manager': 'PM',
+                'Team Member': 'TM'
+            };
+            const apiRole = roleMap[selectedRole];
+
+            // Prepare data
+            const userData = {
+                username: email,
+                email: email,
+                password: password,
+                first_name: firstName,
+                last_name: lastName,
+                phone: phone,
+                role: apiRole
+            };
+
+            // Add role-specific data
+            if (selectedRole === 'Team Member') {
+                userData.skills = document.getElementById('skills').value;
+                userData.experience_level = document.getElementById('experienceLevel').value;
+            } else if (selectedRole === 'Project Manager') {
+                userData.specialization = document.getElementById('specialization').value;
+                const expVal = document.getElementById('yearsExperience').value;
+                userData.years_experience = expVal ? parseInt(expVal) : 0;
+            } else if (selectedRole === 'Product Owner') {
+                userData.company = document.getElementById('company').value;
+                userData.industry = document.getElementById('industry').value;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    let errorMessage = 'Registration failed';
+                    if (errorData.username) errorMessage = 'Email already registered';
+                    else if (errorData.detail) errorMessage = errorData.detail;
+                    throw new Error(errorMessage);
+                }
+
+                // Show success message
+                Swal.fire({
+                    title: 'Registration Successful!',
+                    html: `
+                        <p>Welcome to TaskVision, ${firstName}!</p>
+                        <p>You have registered as a <strong>${selectedRole}</strong>.</p>
+                        <p>You can now login and start using the system.</p>
+                    `,
+                    icon: 'success',
+                    confirmButtonText: 'Go to Login',
+                    confirmButtonColor: '#33ccab'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                Swal.fire('Error', error.message, 'error');
+            }
+        });
+
+        // Initialize form validation
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('registrationForm');
+            if (form) {
+                form.addEventListener('input', function () {
+                    const inputs = form.querySelectorAll('input[required]');
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    let allValid = true;
+
+                    inputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            allValid = false;
+                        }
+                    });
+
+                    if (!document.getElementById('termsAgreement').checked) {
+                        allValid = false;
+                    }
+
+                    submitBtn.disabled = !allValid;
+                });
+            }
+        });
+        function toggleAIChat() {
+            const chat = document.getElementById('aiChatContainer');
+            const isVisible = chat.style.display === 'flex';
+            chat.style.display = isVisible ? 'none' : 'flex';
+            if (!isVisible) document.getElementById('aiInput').focus();
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            input.value = '';
+            const chatMessages = document.getElementById('aiChatMessages');
+            chatMessages.innerHTML += `<div class="chat-message message-user">${message}</div>`;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            document.getElementById('typingIndicator').style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_URL}/ai/chat/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message,
+                        context: { dashboard: 'Registration Page', status: 'Onboarding' }
+                    })
+                });
+
+                const data = await response.json();
+                chatMessages.innerHTML += `
+                    <div class="chat-row">
+                        <div class="ai-avatar"><i class="bi bi-robot"></i></div>
+                        <div class="chat-message message-ai">${data.reply}</div>
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error('AI Error:', error);
+                chatMessages.innerHTML += `<div class="chat-message message-ai bg-danger text-white">Neural link failed. Try again.</div>`;
+            } finally {
+                document.getElementById('typingIndicator').style.display = 'none';
+            }
+        }
+    </script>
+
+    <!-- LeadBot Components -->
+    <div class="ai-chat-toggle" onclick="toggleAIChat()">
+        <i class="bi bi-robot"></i>
+    </div>
+
+    <div class="ai-chat-container" id="aiChatContainer">
+        <div class="ai-chat-header">
+            <div class="d-flex align-items-center">
+                <div class="ai-avatar bg-white text-primary me-2 shadow-sm" style="width: 35px; height: 35px;">
+                    <i class="bi bi-robot fs-5" style="color: #a456bf"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">LeadBot</h6>
+                    <div class="d-flex align-items-center"><span class="status-dot"></span><small class="opacity-75">Online Now</small></div>
+                </div>
+            </div>
+            <div onclick="toggleAIChat()" style="cursor: pointer; opacity: 0.8;"><i class="bi bi-x-lg fs-5"></i></div>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="chat-row">
+                <div class="ai-avatar"><i class="bi bi-robot"></i></div>
+                <div class="chat-message message-ai">
+                    Hello! I'm LeadBot. Ready to join TaskVision? Pick a role and I'll help you get started! 🚀
+                </div>
+            </div>
+        </div>
+        <div class="typing-indicator px-4" id="typingIndicator">
+            LeadBot is thinking...
+        </div>
+        <div class="ai-chat-input">
+            <div class="input-group">
+                <input type="text" class="form-control border-0 bg-transparent shadow-none" id="aiInput" placeholder="Reply to LeadBot..." onkeypress="handleKeyPress(event)">
+                <button class="btn btn-link text-primary p-0" onclick="sendMessage()" style="color: #a456bf !important">
+                    <i class="bi bi-lightning-charge-fill fs-4 text-warning"></i>
+                </button>
+            </div>
+        </div>
+        <div class="ai-chat-footer">
+            We're <i class="bi bi-lightning-fill text-warning"></i> by TaskVision
+        </div>
+    </div>
+</body>
+
+</html>
